@@ -2,6 +2,7 @@ import re
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+from limpeza import ajeita_negocio
 
 url = "https://www.doctoralia.com.br/pesquisa?q=Psiquiatra&loc=Rio%20de%20Janeiro&filters%5Bspecializations%5D%5B%5D=78"
 page =  requests.get(url)
@@ -20,10 +21,6 @@ dados = {
     'Link' : []
 }
 
-def ajeita_negocio(str):
-    return re.sub(r'[^0-9]', '', str)
-
-
 for doctoralia in soup.find_all('div', {'class': 'card card-shadow-1 mb-1'}):
     
     nome = doctoralia.find('span', {'itemprop': 'name'}).text.strip()
@@ -39,7 +36,7 @@ for doctoralia in soup.find_all('div', {'class': 'card card-shadow-1 mb-1'}):
     else:
        valor = None
     if valor == "0" or valor is None or valor.strip() == "":
-       valor = "Não definido"
+       valor = "NÃ£o definido"
     else:
        valor = "R$ " + valor
     dados['Valor da Consulta'].append(valor)    
