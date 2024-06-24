@@ -26,13 +26,21 @@ dados = {
 
 for doctoralia in soup.find_all('div', {'class': 'card card-shadow-1 mb-1'}):
 
+    def ajeita_negocio(str):
+     return re.sub(r'[^0-9]', '', str)
+
+
     nome = doctoralia.find('span', {'itemprop': 'name'}).text
     dados['Nome'].append(nome)
 
     profissao = doctoralia.find('span', {'data-test-id': 'doctor-specializations'}).text
     dados['Profissão'].append(profissao)
 
-    valor = doctoralia.find('span', {'itemprop': 'name'}).text
+    valor = doctoralia.find('p', {'class': 'm-0 text-nowrap font-weight-bold'})
+
+    valor = str(valor)
+    valor = ajeita_negocio(valor)
+
     dados['Valor da Consulta'].append(valor)
 
     endereco = doctoralia.find('span', {'class': 'text-truncate'}).text
@@ -42,9 +50,6 @@ for doctoralia in soup.find_all('div', {'class': 'card card-shadow-1 mb-1'}):
     dados['Tem Teleconsulta?'].append(teleconsulta)
 
     opiniao = doctoralia.find('a', {'data-ga-label': 'Reviews'}).text
-
-    def ajeita_negocio(str):
-        return re.sub(r'[^0-9]', '', str)
 
     opiniao = ajeita_negocio(opiniao)
     dados['Número de Opiniões'].append(opiniao)
