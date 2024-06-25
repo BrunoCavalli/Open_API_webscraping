@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from limpeza import ajeita_negocio
+from limpeza import arruma_negocio
 
 # Verificando se o site permite a extracao de dados
 url = "https://www.doctoralia.com.br/pesquisa?q=Psiquiatra&loc=Rio%20de%20Janeiro&filters%5Bspecializations%5D%5B%5D=78"
@@ -53,10 +54,12 @@ for doctoralia in soup.find_all('div', {'class': 'card card-shadow-1 mb-1'}):
     dados['Endereco'].append(endereco)
     
     # Extraindo as opinioes dos pacientes para cada um dos doutores
-    opiniao = doctoralia.find('a', {'data-ga-label': 'Reviews'}).text
-    opiniao = ajeita_negocio(opiniao)
+    opiniao = doctoralia.find('a', {'data-ga-label': 'Reviews'})
+    if opiniao is not None:
+     opiniao = str(opiniao.get_text())
+     opiniao = arruma_negocio(opiniao)
     dados['Numero de Opinioes'].append(opiniao)
-    
+
     # Verificando se o perfil dos doutores sao verificados
     perfil_verificado = []
     selo_1 = doctoralia.find('i', {'class': 'svg-icon svg-icon-check-filled svg-icon-size-12 svg-icon-color-secondary'})
