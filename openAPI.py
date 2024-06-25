@@ -1,4 +1,4 @@
-"""Modulo de implementação da analize dos dados com API da openai"""
+""" Modulo de implementação da analise dos dados com API da openai """
 
 import DoctorAlia
 import pandas as pd
