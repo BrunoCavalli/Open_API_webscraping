@@ -1,4 +1,4 @@
-""" Modulo Principal """
+""" Modulo principal """
 
 import requests
 import pandas as pd
