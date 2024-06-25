@@ -39,12 +39,12 @@ for url in urls:
         review['Nome'].append(nome)
     
 # adicionar número de estrelas
-       estrelas = comentario.find('div', {'id': 'rating-as-stars'})
+        estrelas = comentario.find('div', {'id': 'rating-as-stars'})
         estrelas = estrelas.find('div').get('data-score')
         review['Estrelas'].append(estrelas)
     
 # extrair comentario escrito 
-      avaliacao = comentario.find('p', {'class': 'text-break'}).text.strip()
+        avaliacao = comentario.find('p', {'class': 'text-break'}).text.strip()
         review['Avaliacao'].append(avaliacao)
     
 # extrair data do comentario
@@ -52,7 +52,7 @@ for url in urls:
         review['Data'].append(data)
 
 # aumenta a contagem e finaliza a iteração quando esta chegar a 10
-       limite += 1
+        limite += 1
         if limite > 10:
             break
         
