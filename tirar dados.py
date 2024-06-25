@@ -1,4 +1,4 @@
-from OpenAPI import analyze_data
+from openAPI import analyze_data
 
 dados_path1 = './dados.csv'
 perguntas_dados = [
