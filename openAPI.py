@@ -1,46 +1,57 @@
-"""Modulo de implementação da API da openai"""
-
 import pandas as pd
 from openai import OpenAI
+import concurrent.futures
 
-# inicializar o cliente OpenAI com a chave da API
+# Inicializar o cliente OpenAI com a chave da API
 chave_api = input("digite sua chave aqui:")
 client = OpenAI(api_key=chave_api)
 
-def analyze_data(dados_path):
-    # ler o arquivo CSV
+def analyze_data(dados_path, perguntas):
+    # Ler o arquivo CSV
     dados = pd.read_csv(dados_path)
-    dados_str = dados.to_string()
     
-    # fazer a chamada para a API do openai
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "assistant",
-                "content": "You will be provided with a csv file, and your task is to make comments about the relation of the number of opinions and the value of the doctors."
-            },
-            {
-                "role": "user",
-                "content": dados_str
-            },
-        ],
-        temperature=0.7,
-        max_tokens=1000,
-        top_p=1
-    )
+    def get_response(prompt):
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=prompt,
+            temperature=0.7,
+            max_tokens=1000,
+            top_p=1
+        )
+        return response.choices[0].message.content
     
-    # extrair a resposta do chatbot
-    resposta = response.choices[0].message.content
+    def process_row(row, pergunta):
+        prompt = [
+            {"role": "assistant", "content": "You will receive a CSV row, your task is to make comments about the content of it."},
+            {"role": "user", "content": row.to_string()},
+            {"role": "user", "content": pergunta}
+        ]
+        return get_response(prompt)
     
-    # adicionar a resposta como uma nova coluna no DataFrame
-    dados['Comments'] = resposta
+    # Iterar sobre a lista de perguntas
+    for idx, pergunta in enumerate(perguntas):
+        coluna_nome = f'Resposta_{idx+1}'
+        dados[coluna_nome] = ""
+        
+        # Usa ThreadPoolExecutor for parallel API calls
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = {executor.submit(process_row, dados.iloc[i], pergunta): i for i in range(len(dados))}
+            for future in concurrent.futures.as_completed(futures):
+                idl = futures[future]
+                resposta = future.result()
+                dados.at[idl, coluna_nome] = resposta
     
-    # salvar o DataFrame modificado de volta em um arquivo CSV
+    # Salvar o DataFrame modificado de volta em um arquivo CSV
     dados.to_csv(dados_path, index=False)
     
     return dados
 
 dados_path = './dados.csv'
-resultado = analyze_data(dados_path)
+perguntas = [
+    "What are the main trends in the data?",
+    "Are there any outliers or anomalies?",
+    "Can you provide a summary of the key statistics?"
+]
+
+resultado = analyze_data(dados_path, perguntas)
 print(resultado)
