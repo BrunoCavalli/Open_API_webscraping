@@ -1,18 +1,18 @@
-"""modulo de implementação da API da openai"""
+"""Modulo de implementação da API da openai"""
 
 import pandas as pd
 from openai import OpenAI
 
-# Inicializar o cliente OpenAI com a chave da API
+# inicializar o cliente OpenAI com a chave da API
 chave_api = input("digite sua chave aqui:")
 client = OpenAI(api_key=chave_api)
 
 def analyze_data(dados_path):
-    # Ler o arquivo CSV
+    # ler o arquivo CSV
     dados = pd.read_csv(dados_path)
     dados_str = dados.to_string()
     
-    # Fazer a chamada para a API do openai
+    # fazer a chamada para a API do openai
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -30,13 +30,13 @@ def analyze_data(dados_path):
         top_p=1
     )
     
-    # Extrair a resposta do chatbot
+    # extrair a resposta do chatbot
     resposta = response.choices[0].message.content
     
-    # Adicionar a resposta como uma nova coluna no DataFrame
+    # adicionar a resposta como uma nova coluna no DataFrame
     dados['Comments'] = resposta
     
-    # Salvar o DataFrame modificado de volta em um arquivo CSV
+    # salvar o DataFrame modificado de volta em um arquivo CSV
     dados.to_csv(dados_path, index=False)
     
     return dados
