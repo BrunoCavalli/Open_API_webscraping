@@ -9,4 +9,4 @@ def arruma_negocio(str):
     palavra = "opiniões"
     return str.replace(palavra, f" {palavra}")
 
-# Este pequeno módulo limpa os dados 
+# este pequeno módulo limpa os dados 
